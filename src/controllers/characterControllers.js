@@ -16,6 +16,64 @@ async function getAllCharacters(req, res) {
   }
 }
 
+async function createCharacter(req, res) {
+  const { name, weight, history, age, image } = req.body
+
+  try {
+    if (
+      name.length > 0 &&
+      history.length > 0 &&
+      image.length > 0 &&
+      typeof weight === "number" &&
+      typeof age === "number"
+    ) {
+      const [, created] = await Character.findOrCreate({
+        where: { name },
+        defaults: { weight, history, age, image },
+      })
+
+      if (created) {
+        res.json({ message: "Successfully created character!" })
+      } else {
+        res.json({ message: "Character already exists!" })
+      }
+    } else {
+      return res.json({ message: "Missing data!" })
+    }
+  } catch (error) {
+    return res.json({ message: error })
+  }
+}
+
+async function editCharacter(req, res) {
+  const { id, name, weight, history, image, age, idMoviesOrSeries } = req.body
+  try {
+    if (id) {
+      const character = await Character.findByPk(id)
+      if (character) {
+        if (name.length > 0) await character.update({ name })
+        if (history.length > 0) await character.update({ history })
+        if (image.length > 0) await character.update({ image })
+        if (typeof age === "number") await character.update({ age })
+        if (typeof weight === "number") await character.update({ weight })
+        if (idMoviesOrSeries?.length > 0) {
+          await character.setMovieOrSeries(idMoviesOrSeries)
+        }
+        await character.save()
+        res.json({ message: "Character updated successfully!" })
+      } else {
+        res.json({ message: "Character not found!" })
+      }
+    } else {
+      res.json({ message: "Character not found!" })
+    }
+  } catch (error) {
+    res.json({ message: ";S" })
+  }
+}
+
 module.exports = {
   getAllCharacters,
+  createCharacter,
+  editCharacter,
 }
