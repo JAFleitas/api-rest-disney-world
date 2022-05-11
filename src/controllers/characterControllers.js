@@ -72,8 +72,28 @@ async function editCharacter(req, res) {
   }
 }
 
+async function deleteCharacter(req, res) {
+  const { id } = req.body
+  try {
+    if (id) {
+      const character = await Character.findByPk(id)
+      if (character) {
+        await character.destroy()
+        res.json({ message: "Deleted character!" })
+      } else {
+        res.json({ message: "Character not found!" })
+      }
+    } else {
+      res.json({ message: "Missing data!" })
+    }
+  } catch (error) {
+    res.json({ message: error })
+  }
+}
+
 module.exports = {
   getAllCharacters,
   createCharacter,
   editCharacter,
+  deleteCharacter,
 }
