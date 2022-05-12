@@ -3,7 +3,7 @@ require("dotenv").config()
 // importing models
 const modelCharacter = require("./models/character")
 const modelMovieOrSerie = require("./models/movieOrSerie")
-const modelGender = require("./models/gender")
+const modelGenre = require("./models/genre")
 
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env
 const sequelize =
@@ -42,11 +42,11 @@ const sequelize =
 
 modelCharacter(sequelize)
 modelMovieOrSerie(sequelize)
-modelGender(sequelize)
+modelGenre(sequelize)
 
 // table association
 
-const { Character, MovieOrSerie, Gender } = sequelize.models
+const { Character, MovieOrSerie, Genre } = sequelize.models
 
 MovieOrSerie.belongsToMany(Character, {
   through: "associationMoviesCharacters",
@@ -59,8 +59,8 @@ Character.belongsToMany(MovieOrSerie, {
   timestamps: false,
 })
 
-Gender.hasMany(MovieOrSerie, { foreignKey: "idGender" })
-MovieOrSerie.belongsTo(Gender, { foreignKey: "idGender" })
+Genre.hasMany(MovieOrSerie, { foreignKey: "idGender" })
+MovieOrSerie.belongsTo(Genre, { foreignKey: "idGender" })
 
 module.exports = {
   sequelize,
