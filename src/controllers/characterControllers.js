@@ -1,4 +1,4 @@
-const { Character } = require("../db")
+const { Character, MovieOrSerie } = require("../db")
 
 async function getAllCharacters(req, res) {
   try {
@@ -91,9 +91,32 @@ async function deleteCharacter(req, res) {
   }
 }
 
+async function getCharacterDetail(req, res) {
+  const { name } = req.params
+  try {
+    if (name.length > 0) {
+      const character = await Character.findOne({
+        where: { name },
+        include: [
+          {
+            model: MovieOrSerie,
+          },
+        ],
+      })
+      if (character) res.json({ character })
+      else res.json({ message: "Character not found!" })
+    } else {
+      res.json({ message: "Missing data!" })
+    }
+  } catch (error) {
+    res.json({ message: error })
+  }
+}
+
 module.exports = {
   getAllCharacters,
   createCharacter,
   editCharacter,
   deleteCharacter,
+  getCharacterDetail,
 }
