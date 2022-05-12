@@ -113,10 +113,35 @@ async function getCharacterDetail(req, res) {
   }
 }
 
+async function addMoviesOrSeries(req, res) {
+  const { idCharacter, arrayIdMoviesOrSeries } = req.body
+
+  try {
+    if (idCharacter && arrayIdMoviesOrSeries.length > 0) {
+      const character = await Character.findByPk(arrayIdMoviesOrSeries)
+
+      await character.addMoviesOrSeries(arrayIdMoviesOrSeries)
+
+      res.json({
+        message:
+          arrayIdMoviesOrSeries.length === 1
+            ? "Added successfully!"
+            : "Were added successfully!",
+      })
+    } else {
+      res.json({ message: "Missing data!" })
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(404).json({ message: "An unexepected error occurred!" })
+  }
+}
+
 module.exports = {
   getAllCharacters,
   createCharacter,
   editCharacter,
   deleteCharacter,
   getCharacterDetail,
+  addMoviesOrSeries,
 }
