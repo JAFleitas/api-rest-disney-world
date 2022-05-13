@@ -1,10 +1,20 @@
-const { Character, MovieOrSerie } = require("../db")
+const { Character, MovieOrSerie, Op, Genre } = require("../db")
 
 async function getAllMoviesOrSeries(req, res) {
+  const { title, genre, order } = req.query
   try {
-    const moviesOrSeries = await MovieOrSerie.findAll({
-      attributes: ["name", "image"],
-    })
+    const settings = { where: {}, attributes: ["name", "image"] }
+    if (title?.length) {
+      settings.where = { title: { [Op.iLike]: `%${title}%` } }
+    }
+    if (genre) {
+      settings.include = [{ model: Genre, where: { id: genre } }]
+    }
+    if (order) {
+      settings.order = [["creationDate", order]]
+    }
+
+    const moviesOrSeries = await MovieOrSerie.findAll(settings)
 
     if (moviesOrSeries.length > 0) {
       return res.json({ moviesOrSeries })
@@ -12,6 +22,7 @@ async function getAllMoviesOrSeries(req, res) {
       return res.json({ message: "There are no movies or series!" })
     }
   } catch (error) {
+    console.log(error)
     return res.json({ message: error })
   }
 }
