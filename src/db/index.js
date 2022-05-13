@@ -4,6 +4,7 @@ require("dotenv").config()
 const modelCharacter = require("./models/character")
 const modelMovieOrSerie = require("./models/movieOrSerie")
 const modelGenre = require("./models/genre")
+const modelUser = require("./models/user")
 
 const { DB_USER, DB_PASSWORD, DB_HOST, DB_NAME } = process.env
 const sequelize =
@@ -43,6 +44,7 @@ const sequelize =
 modelCharacter(sequelize)
 modelMovieOrSerie(sequelize)
 modelGenre(sequelize)
+modelUser(sequelize)
 
 // table association
 

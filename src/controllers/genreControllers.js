@@ -1,4 +1,3 @@
-const genre = require("db/models/genre")
 const { Genre } = require("../db")
 
 async function createGenre(req, res) {
@@ -63,7 +62,7 @@ async function deleteGenre(req, res) {
 async function getGenres(req, res) {
   try {
     const genres = await Genre.findAll()
-    if (genre.length) {
+    if (genres.length) {
       res.json({ genres })
     } else {
       res.json({ message: "Genres not found!" })
