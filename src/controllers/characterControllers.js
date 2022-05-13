@@ -1,17 +1,30 @@
-const { Character, MovieOrSerie } = require("../db")
+const { Character, MovieOrSerie, Op } = require("../db")
 
 async function getAllCharacters(req, res) {
   try {
-    const characters = await Character.findAll({
-      attributes: ["name", "image"],
-    })
+    const { age, name, weight, movies } = req.query
+    const settings = { where: {}, attributes: ["name", "image"] }
+    if (name?.length) {
+      settings.where = { name: { [Op.iLike]: `%${name}%` } }
+    }
+    if (age) {
+      settings.where.age = { [Op.eq]: age }
+    }
+    if (weight) {
+      settings.where.weight = { [Op.eq]: weight }
+    }
+    if (movies) {
+      settings.include = [{ model: MovieOrSerie, where: { id: movies } }]
+    }
+    const characters = await Character.findAll(settings)
 
     if (characters.length > 0) {
       return res.json({ characters })
     } else {
-      return res.json({ message: "" })
+      return res.json({ message: "Characters not found" })
     }
   } catch (error) {
+    console.log(error)
     return res.json({ message: error })
   }
 }
@@ -109,6 +122,7 @@ async function getCharacterDetail(req, res) {
       res.json({ message: "Missing data!" })
     }
   } catch (error) {
+    console.log(error)
     res.json({ message: error })
   }
 }
